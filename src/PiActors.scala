@@ -11,7 +11,7 @@ class Calculator extends Actor {
   val rand = new Random
   var pi, in, cnt = 1.0
 
-  def act() {
+  def act {
     while (true) {
       receive {
         case Calculate =>
@@ -24,19 +24,19 @@ class Calculator extends Actor {
   def estimativeOfPi: Double = {
     val x = rand.nextDouble - 0.5
     val y = rand.nextDouble - 0.5
-    cnt += 1.0;
+    cnt += 1.0
     if (sqrt(x * x + y * y) < 0.5) in += 1
-    return in / cnt * 4
+    in / cnt * 4
   }
 }
 
 class Coordinator(numOfCalculators: Int) extends Actor {
-  def act() {
+  def act {
     val startedAt = currentTimeMillis
     var calculators = List.fill(numOfCalculators)(new Calculator)
     calculators.foreach(c => {
-        c.start
-        c ! Calculate
+      c.start
+      c ! Calculate
     })
     while (true) {
       receive {
@@ -46,7 +46,7 @@ class Coordinator(numOfCalculators: Int) extends Actor {
             sender ! Calculate
           else {
             val tempo = currentTimeMillis - startedAt
-            calculators.foreach(_ ! ShutDown)                        
+            calculators.foreach(_ ! ShutDown)
             println("Pi found by " + sender + " = " + estimative)
             println("Execution time: " + tempo)
             exit
@@ -56,8 +56,6 @@ class Coordinator(numOfCalculators: Int) extends Actor {
   }
 }
 
-object PiActors {
-  def main(args: Array[String]) {
-    new Coordinator(2).start
-  }
+object PiActors extends App {
+  new Coordinator(2) start
 }
